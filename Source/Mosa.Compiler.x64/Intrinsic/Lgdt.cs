@@ -1,4 +1,4 @@
-﻿// Copyright (c) MOSA Project. Licensed under the New BSD License.
+// Copyright (c) MOSA Project. Licensed under the New BSD License.
 
 using Mosa.Compiler.Framework;
 
@@ -13,7 +13,5 @@ internal static partial class IntrinsicMethods
 	private static void Lgdt(Context context, Transform transform)
 	{
 		context.SetInstruction(X64.Lgdt, null, context.Operand1);
-
-		//context.AppendInstruction(X64.JmpFar);s
 	}
 }

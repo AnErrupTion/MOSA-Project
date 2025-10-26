@@ -147,6 +147,7 @@ public static class X64
 	public static readonly BaseInstruction Rcr32 = new Rcr32();
 	public static readonly BaseInstruction Rcr64 = new Rcr64();
 	public static readonly BaseInstruction Ret = new Ret();
+	public static readonly BaseInstruction Retfq = new Retfq();
 	public static readonly BaseInstruction Roundsd = new Roundsd();
 	public static readonly BaseInstruction Roundss = new Roundss();
 	public static readonly BaseInstruction Sar32 = new Sar32();
