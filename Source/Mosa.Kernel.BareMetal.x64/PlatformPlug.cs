@@ -1,4 +1,4 @@
-﻿// Copyright (c) MOSA Project. Licensed under the New BSD License.
+// Copyright (c) MOSA Project. Licensed under the New BSD License.
 
 using Mosa.DeviceSystem.Misc;
 using Mosa.Runtime;
@@ -17,13 +17,23 @@ public static class PlatformPlug
 	public static void ForceInclude()
 	{ }
 
-	[Plug("Mosa.Kernel.BareMetal.Platform::Initialization")]
-	public static void Initialization(Pointer stackFrame)
+	[Plug("Mosa.Kernel.BareMetal.Platform::Setup")]
+	public static void Setup(Pointer stackFrame)
 	{
+		Debug.WriteLine("x64.PlatformPlug::Setup()");
+
 		var rax = stackFrame.Load32(-8);
 		var rbx = stackFrame.LoadPointer(-32);
 
 		Multiboot.Setup(rbx, rax);
+
+		Debug.WriteLine("x64.PlatformPlug::Setup() [Exit]");
+	}
+
+	[Plug("Mosa.Kernel.BareMetal.Platform::Initialize")]
+	public static void Initialize()
+	{
+		Debug.WriteLine("x64.PlatformPlug::Initialize()");
 
 		SSE.Setup();
 		PIC.Setup();
@@ -33,6 +43,8 @@ public static class PlatformPlug
 		{
 			SerialController.Setup(SerialController.COM1);
 		}
+
+		Debug.WriteLine("x64.PlatformPlug::Initialize() [Exit]");
 	}
 
 	[Plug("Mosa.Kernel.BareMetal.Platform::GetBootReservedRegion")]
@@ -65,23 +77,23 @@ public static class PlatformPlug
 
 	public static class PageTablePlug
 	{
-		//[Plug("Mosa.Kernel.BareMetal.Platform+PageTable::Setup")]
-		//public static void Setup() => x64.PageTable.Setup();
+		[Plug("Mosa.Kernel.BareMetal.Platform+PageTable::Setup")]
+		public static void Setup() => PageTable.Setup();
 
 		[Plug("Mosa.Kernel.BareMetal.Platform+PageTable::GetPageShift")]
 		public static uint GetPageShift() => 12;
 
-		//[Plug("Mosa.Kernel.BareMetal.Platform+PageTable::Initialize")]
-		//public static void Initialize() => x64.PageTable.Initialize();
+		[Plug("Mosa.Kernel.BareMetal.Platform+PageTable::Initialize")]
+		public static void Initialize() => PageTable.Initialize();
 
-		//[Plug("Mosa.Kernel.BareMetal.Platform+PageTable::Enable")]
-		//public static void Enable() => x64.PageTable.Enable();
+		[Plug("Mosa.Kernel.BareMetal.Platform+PageTable::Enable")]
+		public static void Enable() => PageTable.Enable();
 
-		//[Plug("Mosa.Kernel.BareMetal.Platform+PageTable::MapVirtualAddressToPhysical")]
-		//public static void MapVirtualAddressToPhysical(Pointer virtualAddress, Pointer physicalAddress, bool present = true) => x64.PageTable.MapVirtualAddressToPhysical(virtualAddress, physicalAddress, present);
+		[Plug("Mosa.Kernel.BareMetal.Platform+PageTable::MapVirtualAddressToPhysical")]
+		public static void MapVirtualAddressToPhysical(Pointer virtualAddress, Pointer physicalAddress, bool present = true) => PageTable.MapVirtualAddressToPhysical(virtualAddress, physicalAddress, present);
 
-		//[Plug("Mosa.Kernel.BareMetal.Platform+PageTable::GetPhysicalAddressFromVirtual")]
-		//public static Pointer GetPhysicalAddressFromVirtual(Pointer virtualAddress) => x64.PageTable.GetPhysicalAddressFromVirtual(virtualAddress);
+		[Plug("Mosa.Kernel.BareMetal.Platform+PageTable::GetPhysicalAddressFromVirtual")]
+		public static Pointer GetPhysicalAddressFromVirtual(Pointer virtualAddress) => PageTable.GetPhysicalAddressFromVirtual(virtualAddress);
 	}
 
 	public static class InterruptPlug
