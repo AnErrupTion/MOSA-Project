@@ -1,4 +1,4 @@
-﻿// Copyright (c) MOSA Project. Licensed under the New BSD License.
+// Copyright (c) MOSA Project. Licensed under the New BSD License.
 
 using Mosa.Compiler.Framework;
 
@@ -12,11 +12,8 @@ internal static partial class IntrinsicMethods
 	[IntrinsicMethod("Mosa.Compiler.x64.Intrinsic::SetSegments")]
 	private static void SetSegments(Context context, Transform transform)
 	{
-		var operand1 = context.Operand1;
-		var operand2 = context.Operand2;
-		var operand3 = context.Operand3;
-		var operand4 = context.Operand4;
-		var operand5 = context.Operand5;
+		var codeSelector = context.Operand1;
+		var dataSelector = context.Operand2;
 
 		var ds = transform.PhysicalRegisters.Allocate64(CPURegister.DS);
 		var es = transform.PhysicalRegisters.Allocate64(CPURegister.ES);
@@ -24,10 +21,22 @@ internal static partial class IntrinsicMethods
 		var gs = transform.PhysicalRegisters.Allocate64(CPURegister.GS);
 		var ss = transform.PhysicalRegisters.Allocate64(CPURegister.SS);
 
-		context.SetInstruction(X64.MovStoreSeg64, ds, operand1);
-		context.AppendInstruction(X64.MovStoreSeg64, es, operand2);
-		context.AppendInstruction(X64.MovStoreSeg64, fs, operand3);
-		context.AppendInstruction(X64.MovStoreSeg64, gs, operand4);
-		context.AppendInstruction(X64.MovStoreSeg64, ss, operand5);
+		// TODO: Does this work?
+		var blocks = transform.CreateNewBlockContexts(1, context.Label);
+
+		//var v0 = transform.VirtualRegisters.Allocate64();
+
+		// Creates a "far return", which allows setting the segment registers once in the jumped block
+		context.SetInstruction(X64.Push64, null, codeSelector);
+		// context.AppendInstruction(X64.Lea64, v0, blocks[0].Block);
+		context.AppendInstruction(X64.Push64, null, Operand.CreateConstant64(blocks[0].Block.Label));
+		context.AppendInstruction(X64.Retfq);
+
+		blocks[0].AppendInstruction(X64.MovStoreSeg64, ds, dataSelector);
+		blocks[0].AppendInstruction(X64.MovStoreSeg64, es, dataSelector);
+		blocks[0].AppendInstruction(X64.MovStoreSeg64, fs, dataSelector);
+		blocks[0].AppendInstruction(X64.MovStoreSeg64, gs, dataSelector);
+		blocks[0].AppendInstruction(X64.MovStoreSeg64, ss, dataSelector);
+		blocks[0].AppendInstruction(X64.Ret);
 	}
 }

@@ -1,4 +1,4 @@
-﻿// Copyright (c) MOSA Project. Licensed under the New BSD License.
+// Copyright (c) MOSA Project. Licensed under the New BSD License.
 
 using System.Runtime.InteropServices;
 
@@ -227,6 +227,9 @@ public static unsafe class Native
 
 	[DllImport("Mosa.Compiler.x64.Intrinsic::Memclr256")]
 	public static extern void Memclr256(void* destination);
+
+	[DllImport("Mosa.Compiler.x64.Intrinsic::SetSegments")]
+	public static extern void SetSegments(byte codeIndex, byte dataIndex);
 
 	#endregion Intrinsic Methods
 }
